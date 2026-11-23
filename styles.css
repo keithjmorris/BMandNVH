@@ -1,0 +1,85 @@
+/*
+VOICE   Warm, plain-spoken village noticeboard: friendly, tidy, easy for every age.
+IDEA    The hall's own printed notice: a parish poster with a hand-drawn view of the hall.
+PICTURE Layered SVG of the 1960s hall on its grassy triangle between two roads, Norfolk sky.
+COLOUR  Saltmarsh teal dominant, chalk white ground, pantile red accent; night = same at dusk.
+TYPE    Gelasio for titles (village-sign serif), Source Sans 3 for reading. LAYOUT full-width bands.
+*/
+:root{color-scheme:light dark;
+  --bg:light-dark(#ffffff,#0f1c22);
+  --ink:light-dark(#1b2326,#e8eeee);
+  --soft:light-dark(#55636a,#a9b8bc);
+  --teal:light-dark(#16455a,#163b4b);
+  --teal-ink:#f2f7f7;
+  --chalk:light-dark(#f3f1ec,#15262e);
+  --line:light-dark(#dcd8cf,#2a3d45);
+  --red:light-dark(#b8442a,#e2714f);
+  --card:light-dark(#ffffff,#132229);
+  --ok:light-dark(#2f6b3a,#7fc28b);
+  --busy:light-dark(#f4d9cf,#4a2a21);
+}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html{scroll-padding-top:72px;scroll-behavior:smooth}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 "Source Sans 3",system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:Gelasio,Georgia,serif;line-height:1.1;text-wrap:balance;margin:0 0 .5em;font-weight:600}
+h1{font-size:clamp(34px,5vw,52px)}h2{font-size:clamp(26px,3.4vw,36px)}h3{font-size:21px}
+p{margin:0 0 1em;max-width:68ch}
+a{color:var(--red)}a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+.wrap{max-width:1240px;margin:0 auto}
+.band{padding:clamp(36px,5vw,72px) max(5vw,16px)}
+.band.chalk{background:var(--chalk)}
+.band.teal{background:var(--teal);color:var(--teal-ink)}
+.band.teal a{color:#ffd2c2}
+.small{font-size:14px;color:var(--soft)}
+.teal .small{color:#c6d9dd}
+
+/* header */
+header{position:sticky;top:0;z-index:10;background:var(--teal);color:var(--teal-ink)}
+.bar{display:flex;flex-wrap:wrap;align-items:center;gap:6px 24px;padding:10px max(5vw,16px);max-width:1240px;margin:0 auto}
+.brand{font-family:Gelasio,Georgia,serif;font-size:19px;font-weight:600;color:inherit;text-decoration:none;margin-right:auto;line-height:1.2}
+nav{display:flex;flex-wrap:wrap;gap:2px}
+nav a{color:inherit;text-decoration:none;padding:10px 12px;border-radius:8px;font-size:16px}
+nav a:hover,nav a[aria-current]{background:rgba(255,255,255,.14)}
+.cta{background:var(--red);color:#fff!important;font-weight:600}
+nav a.cta:hover{background:#9c3620}
+
+/* hero */
+.hero{background:linear-gradient(var(--teal),var(--teal) 60%,var(--chalk) 60%);padding:clamp(24px,4vw,56px) max(5vw,16px) 0;color:var(--teal-ink)}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:clamp(20px,4vw,56px);align-items:end;max-width:1240px;margin:0 auto}
+.hero-copy{padding-bottom:clamp(40px,8vw,120px)}
+.hero-copy p{font-size:19px;color:#dbe8ea}
+.hero svg{display:block;width:100%;height:auto;border-radius:18px 18px 0 0}
+.btns{display:flex;flex-wrap:wrap;gap:12px;margin-top:20px}
+.btn{display:inline-flex;align-items:center;min-height:48px;padding:0 22px;border-radius:999px;font-weight:600;text-decoration:none;font-size:17px;border:2px solid transparent;cursor:pointer;font-family:inherit}
+.btn.red{background:var(--red);color:#fff}
+.btn.ghost{border-color:currentColor;color:inherit;background:transparent}
+@media(max-width:760px){.hero{background:var(--teal)}.hero-grid{grid-template-columns:1fr}.hero-copy{padding-bottom:8px}}
+
+/* cards & grids */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px}
+.card h3{margin-bottom:.3em}
+.card p:last-child{margin-bottom:0}
+.tag{display:inline-block;font-size:14px;padding:2px 10px;border-radius:999px;background:var(--chalk);color:var(--soft);margin-bottom:10px}
+.tag.paused{background:var(--busy);color:var(--red)}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,4vw,56px);align-items:start}
+@media(max-width:760px){.two{grid-template-columns:1fr}}
+
+/* rates */
+.rates{width:100%;border-collapse:collapse;font-size:17px}
+.rates th,.rates td{padding:14px 10px;border-bottom:1px solid rgba(255,255,255,.25);text-align:left}
+.rates td.n,.rates th.n{text-align:right;white-space:nowrap}
+.rates thead th{font-weight:600;font-size:15px;color:#c6d9dd}
+.rates tbody th{font-weight:400}
+.price{font-family:Gelasio,Georgia,serif;font-size:26px}
+
+ul.clean{list-style:none;padding:0;margin:0}
+ul.clean li{padding:10px 0;border-bottom:1px solid var(--line)}
+.notice{border-left:4px solid var(--red);padding:14px 18px;background:var(--card);border-radius:0 12px 12px 0}
+
+footer{background:#0d2a37;color:#c6d9dd;padding:36px max(5vw,16px);font-size:15px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:12px 28px;justify-content:space-between}
+footer a{color:#ffd2c2}
+.proto{background:#fff4c2;color:#4a3b00;text-align:center;font-size:14px;padding:6px 12px}

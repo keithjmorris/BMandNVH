@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Book the Village Hall</title>
+<meta name="description" content="Check free dates and request a booking at Burnham Market and Norton Village Hall.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gelasio:wght@500;600&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+.book{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:clamp(20px,3vw,40px);align-items:start}
+@media(max-width:900px){.book{grid-template-columns:1fr}}
+.cal-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.cal-head h2{margin:0;font-size:26px}
+.iconbtn{min-width:44px;min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:20px;cursor:pointer}
+.iconbtn:disabled{opacity:.35;cursor:default}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.dow{font-size:14px;color:var(--soft);text-align:center;padding-bottom:4px}
+.day{aspect-ratio:1/1;min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:16px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:2px}
+.day .dot{width:8px;height:8px;border-radius:50%;background:var(--ok)}
+.day.part .dot{background:#d99a2b}
+.day.full{background:var(--busy)}.day.full .dot{background:var(--red)}
+.day.past{opacity:.35;cursor:default}
+.day.sel{outline:3px solid var(--teal);outline-offset:1px;font-weight:600}
+:root[data-theme=dark] .day.sel{outline-color:#7fc4d6}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]) .day.sel{outline-color:#7fc4d6}}
+.key{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:14px;color:var(--soft);margin-top:12px}
+.key span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;background:var(--ok)}
+.key .k2::before{background:#d99a2b}.key .k3::before{background:var(--red)}
+.dayinfo{margin-top:18px}
+.slot{display:flex;justify-content:space-between;gap:10px;padding:10px 14px;border-radius:10px;margin-bottom:6px;font-size:16px}
+.slot.b{background:var(--busy)}.slot.f{background:var(--chalk)}
+.slot b{white-space:nowrap;font-weight:600}
+form{display:grid;gap:16px}
+.row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+@media(max-width:520px){.row{grid-template-columns:1fr}}
+label{display:block;font-weight:600;font-size:16px;margin-bottom:6px}
+.opt{font-weight:400;color:var(--soft);font-size:14px}
+input,select,textarea{width:100%;min-height:48px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);font:16px "Source Sans 3",system-ui,sans-serif}
+textarea{min-height:96px;resize:vertical}
+fieldset{border:0;padding:0;margin:0}
+.checks{display:flex;flex-wrap:wrap;gap:8px 20px}
+.checks label,.agree{display:flex;align-items:center;gap:10px;font-weight:400;min-height:44px;margin:0}
+.checks input,.agree input{width:22px;height:22px;min-height:0;accent-color:var(--teal)}
+.est{background:var(--teal);color:var(--teal-ink);border-radius:14px;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.est .price{font-size:34px;white-space:nowrap}
+.est .small{color:#c6d9dd}
+.err{color:var(--red);font-size:15px;min-height:1em}
+.done{display:none}.done.show{display:block}
+.done dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 16px;margin:0 0 16px}
+.done dt{color:var(--soft)}.done dd{margin:0}
+</style>
+</head>
+<body>
+<div class="proto">Prototype for the committee to review: sample bookings shown, and requests are not sent</div>
+<header>
+  <div class="bar">
+    <a class="brand" href="index.html">Burnham Market &amp; Norton<br>Village Hall</a>
+    <nav aria-label="Main">
+      <a href="index.html#whats-on">What's on</a>
+      <a href="index.html#hire">Hire the hall</a>
+      <a href="index.html#find-us">Find us</a>
+      <a href="index.html#about">About</a>
+      <a class="cta" href="booking.html" aria-current="page">Book</a>
+    </nav>
+  </div>
+</header>
+
+<section class="band chalk">
+  <div class="wrap">
+    <h1>Book the hall</h1>
+    <p>Pick a date to see when the hall is free, then send a request. A member of the committee will confirm your booking by email, usually within a few days.</p>
+    <div class="book">
+      <div class="card">
+        <div class="cal-head">
+          <button class="iconbtn" id="prev" aria-label="Previous month">‹</button>
+          <h2 id="month" aria-live="polite"></h2>
+          <button class="iconbtn" id="next" aria-label="Next month">›</button>
+        </div>
+        <div class="cal" id="cal"></div>
+        <div class="key"><span>Free</span><span class="k2">Partly booked</span><span class="k3">Fully booked</span></div>
+        <div class="dayinfo" id="dayinfo"></div>
+      </div>
+
+      <div class="card">
+        <form id="req" novalidate>
+          <div id="formpart">
+            <h2 style="font-size:26px">Request a booking</h2>
+            <div style="display:grid;gap:16px">
+              <div>
+                <label for="f-date">Date</label>
+                <input type="date" id="f-date" required>
+              </div>
+              <div class="row">
+                <div><label for="f-start">Start</label><select id="f-start"></select></div>
+                <div><label for="f-end">Finish</label><select id="f-end"></select></div>
+              </div>
+              <div>
+                <label for="f-type">Type of hire</label>
+                <select id="f-type">
+                  <option value="10">Individual or group (£10 an hour)</option>
+                  <option value="12">Commercial (£12 an hour)</option>
+                </select>
+              </div>
+              <div><label for="f-purpose">What's it for?</label><input id="f-purpose" placeholder="For example, a birthday party for 40" required></div>
+              <fieldset>
+                <legend style="font-weight:600;margin-bottom:6px">Extras <span class="opt">(optional)</span></legend>
+                <div class="checks">
+                  <label><input type="checkbox" id="f-tt"> Table tennis table</label>
+                  <label><input type="checkbox" id="f-av"> Audio-visual equipment</label>
+                </div>
+              </fieldset>
+              <div class="row">
+                <div><label for="f-name">Your name</label><input id="f-name" autocomplete="name" required></div>
+                <div><label for="f-org">Organisation <span class="opt">(optional)</span></label><input id="f-org" autocomplete="organization"></div>
+              </div>
+              <div class="row">
+                <div><label for="f-email">Email</label><input type="email" id="f-email" autocomplete="email" required></div>
+                <div><label for="f-phone">Phone <span class="opt">(optional)</span></label><input type="tel" id="f-phone" autocomplete="tel"></div>
+              </div>
+              <div><label for="f-notes">Anything else? <span class="opt">(optional)</span></label><textarea id="f-notes"></textarea></div>
+              <div class="est" aria-live="polite">
+                <div><div>Estimated cost</div><div class="small" id="est-note">Choose your times</div></div>
+                <div class="price" id="est">£0</div>
+              </div>
+              <label class="agree"><input type="checkbox" id="f-agree" required> I have read the hall's terms and conditions</label>
+              <p class="err" id="err" role="alert"></p>
+              <button class="btn red" type="submit" style="justify-self:start">Send request</button>
+              <p class="small" style="margin:0">Your details are used only to manage this booking. See the privacy policy.</p>
+            </div>
+          </div>
+        </form>
+        <div class="done" id="done" tabindex="-1">
+          <h2 style="font-size:26px">Thank you, request received</h2>
+          <p>Here's what you asked for. The committee will email you to confirm.</p>
+          <dl id="summary"></dl>
+          <p class="notice small">Prototype only: nothing has been sent. In the live site this request would be saved securely and emailed to the bookings secretary.</p>
+          <button class="btn ghost" id="again" type="button">Make another request</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>Burnham Market &amp; Norton Village Hall</span>
+    <span><a href="index.html">Home</a> · <a href="#">Terms and conditions</a> · <a href="#">Privacy policy</a></span>
+  </div>
+</footer>
+
+<script>
+{
+  const OPEN = 8, CLOSE = 23; // hall hours shown, 08:00–23:00
+  const $ = id => document.getElementById(id);
+  const pad = n => String(n).padStart(2, '0');
+  const iso = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  const fmtT = h => `${pad(Math.floor(h))}:${h % 1 ? '30' : '00'}`;
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+
+  // SAMPLE DATA. In the live site these come from Firebase (date, start, end only — no names shown publicly).
+  const bookings = {};
+  const seed = s => { let x = Math.sin(s) * 10000; return x - Math.floor(x); };
+  for (let i = 0; i < 120; i++) {
+    const d = new Date(today); d.setDate(d.getDate() + i);
+    const r = seed(i + 7), list = [];
+    if (r > 0.82) list.push([9, 22]);
+    else {
+      if (r > 0.35) list.push([10, 12]);
+      if (r > 0.55) list.push([14, 16.5]);
+      if (seed(i + 31) > 0.6) list.push([19, 21.5]);
+    }
+    if (list.length) bookings[iso(d)] = list;
+  }
+  const bookedHours = list => list.reduce((t, [a, b]) => t + b - a, 0);
+  const status = key => {
+    const l = bookings[key] || [];
+    if (!l.length) return '';
+    return bookedHours(l) >= 12 ? 'full' : 'part';
+  };
+
+  let view = new Date(today.getFullYear(), today.getMonth(), 1);
+  let selected = null;
+
+  function drawCal() {
+    $('month').textContent = view.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+    $('prev').disabled = view <= new Date(today.getFullYear(), today.getMonth(), 1);
+    const first = (view.getDay() + 6) % 7; // Monday first
+    const days = new Date(view.getFullYear(), view.getMonth() + 1, 0).getDate();
+    let html = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(d => `<div class="dow">${d}</div>`).join('');
+    html += '<div></div>'.repeat(first);
+    for (let n = 1; n <= days; n++) {
+      const d = new Date(view.getFullYear(), view.getMonth(), n), key = iso(d);
+      const past = d < today, st = past ? '' : status(key);
+      const label = d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' }) +
+        (past ? ', past' : st === 'full' ? ', fully booked' : st === 'part' ? ', partly booked' : ', free');
+      html += `<button type="button" class="day ${st} ${past ? 'past' : ''} ${key === selected ? 'sel' : ''}" data-d="${key}" ${past ? 'disabled' : ''} aria-label="${label}">${n}${past ? '' : '<span class="dot"></span>'}</button>`;
+    }
+    $('cal').innerHTML = html;
+  }
+
+  function freeGaps(list) {
+    const sorted = [...list].sort((a, b) => a[0] - b[0]), gaps = [];
+    let t = OPEN;
+    for (const [a, b] of sorted) { if (a > t) gaps.push([t, a]); t = Math.max(t, b); }
+    if (t < CLOSE) gaps.push([t, CLOSE]);
+    return gaps;
+  }
+
+  function showDay(key) {
+    selected = key;
+    const d = new Date(key + 'T00:00');
+    const list = (bookings[key] || []).slice().sort((a, b) => a[0] - b[0]);
+    const rows = [...list.map(s => ({ s, b: true })), ...freeGaps(list).map(s => ({ s, b: false }))].sort((x, y) => x.s[0] - y.s[0]);
+    $('dayinfo').innerHTML = `<h3>${d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}</h3>` +
+      rows.map(r => `<div class="slot ${r.b ? 'b' : 'f'}"><span>${r.b ? 'Booked' : 'Free'}</span><b>${fmtT(r.s[0])} – ${fmtT(r.s[1])}</b></div>`).join('');
+    $('f-date').value = key;
+    drawCal(); check();
+  }
+
+  // time selects
+  const opts = [];
+  for (let h = OPEN; h <= CLOSE; h += 0.5) opts.push(`<option value="${h}">${fmtT(h)}</option>`);
+  $('f-start').innerHTML = opts.slice(0, -1).join('');
+  $('f-end').innerHTML = opts.slice(1).join('');
+  $('f-start').value = '10'; $('f-end').value = '12';
+  $('f-date').min = iso(today);
+
+  function cost() {
+    const s = +$('f-start').value, e = +$('f-end').value, rate = +$('f-type').value;
+    const hrs = Math.max(0, e - s);
+    return { hrs, total: Math.min(hrs * rate, 100), capped: hrs * rate > 100 };
+  }
+
+  function clash() {
+    const key = $('f-date').value, s = +$('f-start').value, e = +$('f-end').value;
+    return (bookings[key] || []).some(([a, b]) => s < b && e > a);
+  }
+
+  function check() {
+    const { hrs, total, capped } = cost();
+    $('est').textContent = `£${total}`;
+    $('est-note').textContent = hrs ? `${hrs} hour${hrs === 1 ? '' : 's'}${capped ? ', day rate applies' : ''}` : 'Finish must be after start';
+    $('err').textContent = $('f-date').value && clash() ? 'Those times overlap an existing booking. Please choose a free slot.' : '';
+  }
+
+  $('cal').addEventListener('click', e => { const b = e.target.closest('.day'); if (b && !b.disabled) showDay(b.dataset.d); });
+  $('prev').addEventListener('click', () => { view.setMonth(view.getMonth() - 1); drawCal(); });
+  $('next').addEventListener('click', () => { view.setMonth(view.getMonth() + 1); drawCal(); });
+  ['f-start', 'f-end', 'f-type'].forEach(id => $(id).addEventListener('change', check));
+  $('f-date').addEventListener('change', () => {
+    const v = $('f-date').value; if (!v) return;
+    const d = new Date(v + 'T00:00'); view = new Date(d.getFullYear(), d.getMonth(), 1); showDay(v);
+  });
+
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  $('req').addEventListener('submit', e => {
+    e.preventDefault();
+    const need = [['f-date', 'a date'], ['f-purpose', 'what the booking is for'], ['f-name', 'your name'], ['f-email', 'your email']];
+    const miss = need.filter(([id]) => !$(id).value.trim()).map(([, t]) => t);
+    if (miss.length) { $('err').textContent = 'Please add ' + miss.join(', ') + '.'; return; }
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test($('f-email').value)) { $('err').textContent = 'Please check your email address.'; return; }
+    if (cost().hrs <= 0) { $('err').textContent = 'The finish time must be after the start time.'; return; }
+    if (clash()) { $('err').textContent = 'Those times overlap an existing booking. Please choose a free slot.'; return; }
+    if (!$('f-agree').checked) { $('err').textContent = 'Please confirm you have read the terms and conditions.'; return; }
+    const d = new Date($('f-date').value + 'T00:00');
+    const extras = [$('f-tt').checked && 'Table tennis table', $('f-av').checked && 'Audio-visual equipment'].filter(Boolean).join(', ') || 'None';
+    const rows = [
+      ['Date', d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })],
+      ['Time', `${fmtT(+$('f-start').value)} – ${fmtT(+$('f-end').value)}`],
+      ['For', $('f-purpose').value], ['Extras', extras],
+      ['Name', $('f-name').value + ($('f-org').value ? `, ${$('f-org').value}` : '')],
+      ['Email', $('f-email').value], ['Estimated cost', `£${cost().total}`]
+    ];
+    $('summary').innerHTML = rows.map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join('');
+    $('req').style.display = 'none'; $('done').classList.add('show'); $('done').focus();
+  });
+  $('again').addEventListener('click', () => { $('done').classList.remove('show'); $('req').style.display = ''; });
+
+  drawCal(); check();
+}
+</script>
+</body>
+</html>
